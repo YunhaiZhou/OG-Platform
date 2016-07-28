@@ -6,6 +6,8 @@
 package com.opengamma.analytics.financial.interestrate.fra.derivative;
 
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
 
 import com.opengamma.analytics.financial.instrument.InstrumentDefinition;
 import com.opengamma.analytics.financial.instrument.index.IborIndex;
@@ -17,7 +19,8 @@ import com.opengamma.util.money.Currency;
 /**
  * Class describing a Forward Rate Agreement (FRA).
  */
-public class ForwardRateAgreement extends CouponFloating {
+public class
+ForwardRateAgreement extends CouponFloating {
 
   /**
    * Ibor-like index on which the FRA fixes. The index currency should be the same as the instrument currency.
@@ -230,4 +233,18 @@ public class ForwardRateAgreement extends CouponFloating {
     return visitor.visitForwardRateAgreement(this);
   }
 
+  @Override
+  public String toString() {
+    return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+        .appendToString(super.toString())
+        .append("iborIndex", _index)
+        .append("forwardCurveName", _forwardCurveName)
+        .append("rate", _rate)
+        .append("fixingPeriodStartTime", _fixingPeriodStartTime)
+        .append("fixingPeriodEndTime", _fixingPeriodEndTime)
+        .append("fixingYearFraction", _fixingYearFraction)
+        .toString();
+  }
+  
+  
 }

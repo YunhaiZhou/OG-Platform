@@ -7,17 +7,15 @@ package com.opengamma.analytics.math.surface;
 
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 import org.apache.commons.lang.ObjectUtils;
 
 import com.opengamma.analytics.math.interpolation.GridInterpolator2D;
 import com.opengamma.analytics.math.interpolation.Interpolator2D;
 import com.opengamma.analytics.math.interpolation.data.Interpolator1DDataBundle;
+import com.opengamma.util.ArgumentChecker;
 import com.opengamma.util.tuple.DoublesPair;
 import com.opengamma.util.tuple.Pair;
-import com.opengamma.util.ArgumentChecker;
-import com.opengamma.util.tuple.FirstThenSecondDoublesPairComparator;
 import com.opengamma.util.tuple.Triple;
 
 /**
@@ -204,6 +202,7 @@ public class InterpolatedDoublesSurface extends DoublesSurface {
    * @param xVector The x data of the grid. Not null.
    * @param yVector The x data of the grid. Not null.
    * @param zData The z data. Not null. Contains a number of entries which is the product of the number of entries of xVector and yVector.
+   * The z data should be in the order of xVector repeated yVector.length times, i.e. x[0]-y[0], x[1]-y[0], x[2]-y[0], ..., x[0]-y[1], x[1], y[1], etc.
    * @param interpolator  The interpolator, not null
    * @return An interpolated surface with automatically-generated name.
    */
@@ -448,14 +447,11 @@ public class InterpolatedDoublesSurface extends DoublesSurface {
 
   // TODO this logic should be in the interpolator
   private void init() {
-    final Map<DoublesPair, Double> map = new TreeMap<>(new FirstThenSecondDoublesPairComparator());
     final double[] x = getXDataAsPrimitive();
     final double[] y = getYDataAsPrimitive();
     final double[] z = getZDataAsPrimitive();
-    for (int i = 0; i < size(); i++) {
-      map.put(DoublesPair.of(x[i], y[i]), z[i]);
-    }
-    _data = _interpolator.getDataBundle(map);
+    
+    _data = _interpolator.getDataBundleFromUnsorted(x, y, z, false);
   }
 
   /**
@@ -465,7 +461,7 @@ public class InterpolatedDoublesSurface extends DoublesSurface {
   public Double getZValue(final Double x, final Double y) {
     ArgumentChecker.notNull(x, "x");
     ArgumentChecker.notNull(y, "y");
-    return _interpolator.interpolate(_data, new DoublesPair(x, y));
+    return _interpolator.interpolate(_data, DoublesPair.of(x.doubleValue(), y.doubleValue()));
   }
 
   /**

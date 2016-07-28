@@ -5,13 +5,16 @@
  */
 package com.opengamma.analytics.math.interpolation;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.SortedMap;
 import java.util.TreeMap;
 
 import com.opengamma.analytics.math.interpolation.data.Interpolator1DDataBundle;
 import com.opengamma.util.ArgumentChecker;
+import com.opengamma.util.ParallelArrayBinarySort;
 import com.opengamma.util.tuple.DoublesPair;
 import com.opengamma.util.tuple.FirstThenSecondPairComparator;
 
@@ -19,6 +22,7 @@ import com.opengamma.util.tuple.FirstThenSecondPairComparator;
  * 
  */
 public class GridInterpolator2D extends Interpolator2D {
+  private static final long serialVersionUID = 1L;
   //TODO this is really inefficient - needs to be changed in a similar way to 1D interpolation
   /** The x interpolator */
   private final Interpolator1D _xInterpolator;
@@ -57,7 +61,47 @@ public class GridInterpolator2D extends Interpolator2D {
 
   public Map<Double, Interpolator1DDataBundle> getDataBundle(final Map<DoublesPair, Double> data) {
     ArgumentChecker.notNull(data, "data");
+    final TreeMap<DoublesPair, Double> sorted = new TreeMap<>(_comparator);
+    sorted.putAll(data);
+    return testData(sorted);
+  }
+  
+  public Map<Double, Interpolator1DDataBundle> getDataBundleFromSorted(final SortedMap<DoublesPair, Double> data) {
+    ArgumentChecker.notNull(data, "data");
     return testData(data);
+  }
+  
+  public Map<Double, Interpolator1DDataBundle> getDataBundleFromUnsorted(final double[] xInput, final double[] yInput, final double[] zInput, boolean mustCopy) {
+    ArgumentChecker.notNull(xInput, "xValues");
+    ArgumentChecker.notNull(yInput, "yValues");
+    ArgumentChecker.notNull(zInput, "zValues");
+    
+    double[] xValues = mustCopy ? xInput.clone() : xInput;
+    double[] yValues = mustCopy ? yInput.clone() : yInput;
+    double[] zValues = mustCopy ? zInput.clone() : zInput;
+    
+    Map<Double, Interpolator1DDataBundle> result = new TreeMap<Double, Interpolator1DDataBundle>();
+    
+    ParallelArrayBinarySort.parallelBinarySort(xValues, yValues, zValues);
+    Double currX = xValues[0];
+    long currXBits = Double.doubleToRawLongBits(currX);
+    int currStartRange = 0;
+    for (int i = 0; i <= xValues.length; i++) {
+      if ((i == xValues.length) || (currXBits != Double.doubleToRawLongBits(xValues[i]))) {
+        //ParallelArrayBinarySort.parallelBinarySort(yValues, zValues, currStartRange, i - 1);
+        double[] currYValues = Arrays.copyOfRange(yValues, currStartRange, i);
+        double[] currZValues = Arrays.copyOfRange(zValues, currStartRange, i);
+        Interpolator1DDataBundle yzBundle = _yInterpolator.getDataBundle(currYValues, currZValues);
+        result.put(currX, yzBundle);
+        currStartRange = i;
+        if (i != xValues.length) {
+          currX = xValues[i];
+          currXBits = Double.doubleToRawLongBits(currX);
+        }
+      }
+    }
+    
+    return result;
   }
 
   @Override
@@ -95,7 +139,7 @@ public class GridInterpolator2D extends Interpolator2D {
       final double[] yValues = entry.getValue().getKeys();
       for (j = 0; j < yValues.length; j++) {
         sense = xSense[i] * temp[i][j];
-        res.put(new DoublesPair(entry.getKey(), yValues[j]), sense);
+        res.put(DoublesPair.of(entry.getKey().doubleValue(), yValues[j]), sense);
       }
       i++;
     }
@@ -104,9 +148,7 @@ public class GridInterpolator2D extends Interpolator2D {
   }
   private Map<Double, Interpolator1DDataBundle> testData(final Map<DoublesPair, Double> data) {
     final Map<Double, Interpolator1DDataBundle> result = new TreeMap<>();
-    final TreeMap<DoublesPair, Double> sorted = new TreeMap<>(_comparator);
-    sorted.putAll(data);
-    final Iterator<Map.Entry<DoublesPair, Double>> iterator = sorted.entrySet().iterator();
+    final Iterator<Map.Entry<DoublesPair, Double>> iterator = data.entrySet().iterator();
     final Map.Entry<DoublesPair, Double> firstEntry = iterator.next();
     double x = firstEntry.getKey().first;
     Map<Double, Double> yzValues = new TreeMap<>();

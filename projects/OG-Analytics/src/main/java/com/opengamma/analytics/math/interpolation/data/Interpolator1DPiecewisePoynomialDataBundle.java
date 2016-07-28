@@ -5,6 +5,8 @@
  */
 package com.opengamma.analytics.math.interpolation.data;
 
+import java.io.Serializable;
+
 import org.apache.commons.lang.NotImplementedException;
 
 import com.opengamma.analytics.math.interpolation.PiecewisePolynomialInterpolator;
@@ -14,7 +16,7 @@ import com.opengamma.util.ArgumentChecker;
 /**
  * Data bundle for PiecewisePolynomialInterpolator1D
  */
-public class Interpolator1DPiecewisePoynomialDataBundle implements Interpolator1DDataBundle {
+public class Interpolator1DPiecewisePoynomialDataBundle implements Interpolator1DDataBundle, Serializable {
 
   private final PiecewisePolynomialResultsWithSensitivity _poly;
   private final Interpolator1DDataBundle _underlyingData;
@@ -161,4 +163,33 @@ public class Interpolator1DPiecewisePoynomialDataBundle implements Interpolator1
     throw new NotImplementedException();
   }
 
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + _poly.hashCode();
+    result = prime * result + _underlyingData.hashCode();
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (!(obj instanceof Interpolator1DPiecewisePoynomialDataBundle)) {
+      return false;
+    }
+    Interpolator1DPiecewisePoynomialDataBundle other = (Interpolator1DPiecewisePoynomialDataBundle) obj;
+    if (!_underlyingData.equals(other._underlyingData)) {
+      return false;
+    }
+    if (!_poly.equals(other._poly)) {
+      return false;
+    }
+    return true;
+  }
 }

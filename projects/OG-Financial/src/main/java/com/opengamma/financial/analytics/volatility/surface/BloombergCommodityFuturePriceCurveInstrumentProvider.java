@@ -5,6 +5,7 @@
  */
 package com.opengamma.financial.analytics.volatility.surface;
 
+import java.io.Serializable;
 import java.util.Map;
 
 import org.apache.commons.lang.Validate;
@@ -12,18 +13,18 @@ import org.threeten.bp.LocalDate;
 
 import com.google.common.collect.Maps;
 import com.opengamma.OpenGammaRuntimeException;
-import com.opengamma.financial.convention.BrentCrudeFutureExpiryCalculator;
-import com.opengamma.financial.convention.ExchangeTradedInstrumentExpiryCalculator;
-import com.opengamma.financial.convention.GoldFutureExpiryCalculator;
-import com.opengamma.financial.convention.LiveCattleFutureExpiryCalculator;
-import com.opengamma.financial.convention.SoybeanFutureExpiryCalculator;
+import com.opengamma.financial.convention.expirycalc.BrentCrudeFutureExpiryCalculator;
+import com.opengamma.financial.convention.expirycalc.ExchangeTradedInstrumentExpiryCalculator;
+import com.opengamma.financial.convention.expirycalc.GoldFutureExpiryCalculator;
+import com.opengamma.financial.convention.expirycalc.LiveCattleFutureExpiryCalculator;
+import com.opengamma.financial.convention.expirycalc.SoybeanFutureExpiryCalculator;
 import com.opengamma.id.ExternalId;
 import com.opengamma.util.ArgumentChecker;
 
 /**
  *  Provider of commodity Future Instrument ID's.
  */
-public class BloombergCommodityFuturePriceCurveInstrumentProvider implements FuturePriceCurveInstrumentProvider<Number> {
+public class BloombergCommodityFuturePriceCurveInstrumentProvider implements FuturePriceCurveInstrumentProvider<Number>, Serializable {
 
   /**
    * Gets the expiryRules.

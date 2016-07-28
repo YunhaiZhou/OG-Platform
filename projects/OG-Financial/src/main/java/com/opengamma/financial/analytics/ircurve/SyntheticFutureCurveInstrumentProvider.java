@@ -5,6 +5,8 @@
  */
 package com.opengamma.financial.analytics.ircurve;
 
+import java.io.Serializable;
+
 import org.apache.commons.lang.ObjectUtils;
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.Month;
@@ -24,7 +26,7 @@ import com.opengamma.util.time.Tenor;
 /**
  * Provides market data ids for synthetic futures.
  */
-public class SyntheticFutureCurveInstrumentProvider implements CurveInstrumentProvider {
+public class SyntheticFutureCurveInstrumentProvider implements CurveInstrumentProvider, Serializable {
   /** The ticker scheme */
   private static final ExternalScheme SCHEME = ExternalSchemes.OG_SYNTHETIC_TICKER;
   /** The month codes */
@@ -107,6 +109,11 @@ public class SyntheticFutureCurveInstrumentProvider implements CurveInstrumentPr
   @Override
   public ExternalId getInstrument(final LocalDate curveDate, final Tenor tenor, final Tenor resetTenor, final IndexType indexType) {
     throw new OpenGammaRuntimeException("Only futures supported");
+  }
+
+  @Override
+  public ExternalId getInstrument(final LocalDate curveDate, final Tenor startTenor, final int startIMMPeriods, final int endIMMPeriods) {
+    throw new UnsupportedOperationException("Only futures supported");
   }
 
   private static ExternalId createQuarterlyIRFutureStrips(final LocalDate curveDate, final Tenor tenor, final int numQuartlyFuturesFromTenor, final String prefix) {

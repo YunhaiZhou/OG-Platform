@@ -1,9 +1,11 @@
 /**
  * Copyright (C) 2012 - present by OpenGamma Inc. and the OpenGamma group of companies
- * 
+ *
  * Please see distribution for license.
  */
 package com.opengamma.financial.analytics.forwardcurve;
+
+import java.io.Serializable;
 
 import org.threeten.bp.LocalDate;
 
@@ -18,9 +20,9 @@ import com.opengamma.util.ArgumentChecker;
 import com.opengamma.util.time.Tenor;
 
 /**
- * 
+ *
  */
-public class BloombergFXForwardCurveInstrumentProvider implements ForwardCurveInstrumentProvider {
+public class BloombergFXForwardCurveInstrumentProvider implements ForwardCurveInstrumentProvider, Serializable {
   private static final String DATA_FIELD = MarketDataRequirementNames.MARKET_VALUE;
   private static final DataFieldType FIELD_TYPE = DataFieldType.OUTRIGHT;
   private static final ExternalScheme SCHEME = ExternalSchemes.BLOOMBERG_TICKER;
@@ -125,6 +127,11 @@ public class BloombergFXForwardCurveInstrumentProvider implements ForwardCurveIn
   }
 
   @Override
+  public ExternalId getInstrument(final LocalDate curveDate, final Tenor startTenor, final int startIMMPeriods, final int endIMMPeriods) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
   public int hashCode() {
     return getPrefix().hashCode() + getPostfix().hashCode() + getDataFieldName().hashCode();
   }
@@ -143,4 +150,5 @@ public class BloombergFXForwardCurveInstrumentProvider implements ForwardCurveIn
         getSpotPrefix().equals(other.getSpotPrefix()) &&
         getDataFieldName().equals(other.getDataFieldName());
   }
+
 }

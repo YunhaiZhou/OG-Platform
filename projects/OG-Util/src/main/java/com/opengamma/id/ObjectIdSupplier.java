@@ -5,6 +5,7 @@
  */
 package com.opengamma.id;
 
+import java.io.Serializable;
 import java.util.concurrent.atomic.AtomicLong;
 
 import com.google.common.base.Supplier;
@@ -19,7 +20,7 @@ import com.opengamma.util.ArgumentChecker;
  * <p>
  * This class is thread-safe and not externally mutable.
  */
-public class ObjectIdSupplier implements Supplier<ObjectId> {
+public class ObjectIdSupplier implements Supplier<ObjectId>, Serializable {
 
   /**
    * The scheme.
@@ -38,6 +39,16 @@ public class ObjectIdSupplier implements Supplier<ObjectId> {
   public ObjectIdSupplier(final String scheme) {
     ArgumentChecker.notEmpty(scheme, "scheme");
     _scheme = scheme;
+  }
+
+  //-------------------------------------------------------------------------
+  /**
+   * Gets the scheme in use.
+   * 
+   * @return the scheme, not null
+   */
+  public String getScheme() {
+    return _scheme;
   }
 
   //-------------------------------------------------------------------------

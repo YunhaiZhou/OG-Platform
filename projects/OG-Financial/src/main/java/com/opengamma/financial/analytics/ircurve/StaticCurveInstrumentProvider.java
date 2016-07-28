@@ -5,6 +5,8 @@
  */
 package com.opengamma.financial.analytics.ircurve;
 
+import java.io.Serializable;
+
 import org.apache.commons.lang.ObjectUtils;
 import org.threeten.bp.LocalDate;
 
@@ -20,7 +22,7 @@ import com.opengamma.util.time.Tenor;
  *
  * This should be pulled from the configuration.
  */
-public class StaticCurveInstrumentProvider implements CurveInstrumentProvider {
+public class StaticCurveInstrumentProvider implements CurveInstrumentProvider, Serializable {
   /** The market data identifier */
   private final ExternalId _identifier;
   /** The market data field */
@@ -58,13 +60,11 @@ public class StaticCurveInstrumentProvider implements CurveInstrumentProvider {
   @Override
   public ExternalId getInstrument(final LocalDate curveDate, final Tenor tenor, final int numQuarterlyFuturesFromTenor) {
     return _identifier;
-//    throw new OpenGammaRuntimeException("Futures not supported by this class");
   }
 
   @Override
   public ExternalId getInstrument(final LocalDate curveDate, final Tenor startTenor, final Tenor futureTenor, final int numFutureFromTenor) {
     return _identifier;
-//    throw new OpenGammaRuntimeException("Futures not supported by this class");
   }
 
   @Override
@@ -83,6 +83,11 @@ public class StaticCurveInstrumentProvider implements CurveInstrumentProvider {
 
   @Override
   public ExternalId getInstrument(final LocalDate curveDate, final Tenor tenor, final Tenor resetTenor, final IndexType indexType) {
+    return _identifier;
+  }
+
+  @Override
+  public ExternalId getInstrument(final LocalDate curveDate, final Tenor startTenor, final int startIMMPeriods, final int endIMMPeriods) {
     return _identifier;
   }
 

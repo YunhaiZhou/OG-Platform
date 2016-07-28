@@ -5,6 +5,8 @@
  */
 package com.opengamma.analytics.math.interpolation;
 
+import java.io.Serializable;
+
 import com.opengamma.analytics.math.matrix.DoubleMatrix1D;
 import com.opengamma.analytics.math.matrix.DoubleMatrix2D;
 import com.opengamma.util.ArgumentChecker;
@@ -12,7 +14,7 @@ import com.opengamma.util.ArgumentChecker;
 /**
  * Abstract class for interpolations based on piecewise polynomial functions 
  */
-public abstract class PiecewisePolynomialInterpolator {
+public abstract class PiecewisePolynomialInterpolator implements Serializable {
 
   /**
    * @param xValues X values of data
@@ -56,7 +58,7 @@ public abstract class PiecewisePolynomialInterpolator {
         }
       }
     }
-    final double[] coefs = coefMatrix.getRowVector(indicator).getData();
+    final double[] coefs = coefMatrix.getRowVector(indicator, false).getData();
     res = getValue(coefs, xKey, knots[indicator]);
     ArgumentChecker.isFalse(Double.isInfinite(res), "Too large input");
     ArgumentChecker.isFalse(Double.isNaN(res), "Too large input");
@@ -97,13 +99,13 @@ public abstract class PiecewisePolynomialInterpolator {
           }
         }
       }
-      final double[] coefs = coefMatrix.getRowVector(indicator).getData();
+      final double[] coefs = coefMatrix.getRowVector(indicator, false).getData();
       res[j] = getValue(coefs, xKeys[j], knots[indicator]);
       ArgumentChecker.isFalse(Double.isInfinite(res[j]), "Too large input");
       ArgumentChecker.isFalse(Double.isNaN(res[j]), "Too large input");
     }
 
-    return new DoubleMatrix1D(res);
+    return new DoubleMatrix1D(res, false);
   }
 
   /**
@@ -125,7 +127,7 @@ public abstract class PiecewisePolynomialInterpolator {
 
     for (int i = 0; i < keyDim; ++i) {
       for (int j = 0; j < keyLength; ++j) {
-        res[i][j] = interpolate(xValues, yValues, matrix.getRowVector(i).getData()).getData()[j];
+        res[i][j] = interpolate(xValues, yValues, matrix.getRowVector(i, false).getData()).getData()[j];
       }
     }
 
@@ -147,7 +149,7 @@ public abstract class PiecewisePolynomialInterpolator {
     double[] res = new double[dim];
 
     for (int i = 0; i < dim; ++i) {
-      res[i] = interpolate(xValues, matrix.getRowVector(i).getData(), x);
+      res[i] = interpolate(xValues, matrix.getRowVector(i, false).getData(), x);
     }
 
     return new DoubleMatrix1D(res);

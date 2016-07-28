@@ -5,6 +5,8 @@
  */
 package com.opengamma.analytics.math.interpolation;
 
+import java.io.Serializable;
+
 import com.opengamma.analytics.math.matrix.DoubleMatrix1D;
 import com.opengamma.analytics.math.matrix.DoubleMatrix2D;
 
@@ -17,8 +19,9 @@ import com.opengamma.analytics.math.matrix.DoubleMatrix2D;
  * _order: Number of coefficients in polynomial, which is equal to (polynomial degree) + 1
  * _dim: Number of splines
  */
-public class PiecewisePolynomialResult {
-
+public class PiecewisePolynomialResult implements Serializable {
+  private static final long serialVersionUID = 1L;
+  
   private DoubleMatrix1D _knots;
   private DoubleMatrix2D _coefMatrix;
   private int _nIntervals;
@@ -81,4 +84,43 @@ public class PiecewisePolynomialResult {
   public int getDimensions() {
     return _dim;
   }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + _coefMatrix.hashCode();
+    result = prime * result + _dim;
+    result = prime * result + _knots.hashCode();
+    result = prime * result + _order;
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (!(obj instanceof PiecewisePolynomialResult)) {
+      return false;
+    }
+    PiecewisePolynomialResult other = (PiecewisePolynomialResult) obj;
+    if (!_coefMatrix.equals(other._coefMatrix)) {
+      return false;
+    }
+    if (_dim != other._dim) {
+      return false;
+    }
+    if (!_knots.equals(other._knots)) {
+      return false;
+    }
+    if (_order != other._order) {
+      return false;
+    }
+    return true;
+  }
+
 }

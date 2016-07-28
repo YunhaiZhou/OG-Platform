@@ -1,83 +1,113 @@
-OpenGamma Platform 2.1
----------------------------------
+# OpenGamma Platform
 
-These release notes cover changes from v2.0 to v2.1.
+## v2.30
 
-What's New?
-===========
+### Bug Fixes
 
-Integration of pricing with the new multi-curve framework
+* Use swap leg-level effective and termination dates correctly
 
-Our new multi-curve framework is compatible with OIS discounting and collateral approaches,
-and allows calibration with any instrument (IRS, OIS, futures, FX swaps, cross-currency swaps, etc)
-as well as calibration of multiple curves simultaneously using a multi-dimensional root finder. 
-It accepts complex curve entanglements and supports interpolated curves, functional curves,
-and spread curves above another curve.  
+## v2.29
 
-You can provide exogenous dates as node points in interpolated curves (e.g. central bank meeting)
-and produce full Jacobian/transition matrices. In addition, algorithmic differentiation has been
-implemented for the entire curve-building process to achieve reduced computation times. 
-You can access the framework via the web GUI or through the Excel interface.
+### Enhancements
 
-Other key features and enhancements
+* Upgrade Powermock dependency
 
-* Integration of pricing with new multi-curve framework
-* Market data snapshot import/export from CSVs
-* Excel support for new multi-curve framework
-* Improved performance when handling portfolio updates
-* Batch database now has target meta-data table to allow for easier reporting using external OLAP tools
-* Programmatic support for historical scenarios (e.g. (d2-d1)/d1 * today) allowing for scenarios like LTCM, Lehmans, etc
-* Reduced memory footprint
-* More human readable XML configurations
-* Market data system performance improvements
-* Ability to run system with no live data source
-* Various improvements to scenario scripting language
-* Migrated more configuration away from Spring
-* Improved JMX monitoring of market data system and calc engine
-* Jolokia support
+## v2.28
 
-Analytics Library updates
+### Enhancements
 
-* Support for CME Deliverable Swap Futures
-* Support for FED Fund Futures
-* Support for Inflation Swaps (inc year-on-year and zero coupon)
-* Support for Zero-Coupon Swaps
-* Support for Inflation Bonds
-* Improved convention modelling
-* Improvements to credit derivatives modelling
+* Add support for setting effective and termination dates at the individual swap leg level
 
-491 issues were [resolved in JIRA](http://opnga.ma/17MAByc) in this relase.
+## v2.27
 
+### Enhancements
 
-Upgrading from 2.0.0
---------------------
+* Extend SSVI volatility formula implementation to expiry-dependent rho and eta
 
-Significant incompatible changes are noted here:
+## v2.26
 
-Configuration compatibility
-- DbBatchMasterComponentFactory has been extended to include a 'computationTargetResolver' property
-- SpringViewProcessorComponentFactory now has a 'jmsMarketDataAvailabilityTopic' property
-- CurveSpecificationBuilderComponentFactory added for curves with similar setup to CurrencyPairsSourceComponentFactory
-- EngineConfigurationComponentFactory should expose 'conventionSource = ConventionSource::shared'
-- EngineConfigurationComponentFactory should expose 'organizationSource = OrganizationSource::shared'
+### Enhancements
 
+* Improvements to ParallelBinarySort, including support for sorting two value arrays at the same time as the key array
+* Performance improvement to InterpolatedDoublesSurface.init()
+* Optimization for empty and immutable forms of FXMatrix
+* Implementation of FastGridInterpolatedDoublesSurface, which is a specialized InterpolatedDoublesSurface that is primarily useful for historical scenario PnL series generation for options where large numbers of volatility surfaces need to be supported.
 
-Database compatibility
-- rsk schema upgraded to version 51
-- sec schema upgraded to version 67
+## v2.25
 
+### Enhancements
 
-API compatibility
-- Security converters used with the legacy curve system have been renamed.
-XSecurityConverter has become XSecurityConverterDeprecated for the following security types:
-CapFloor, CreditDefaultSwap, Forex, FRA, Future, InterestRateFutureOption, InterestRateFuture, Swap, Swaption.
+* Improvement of performance of Sesame memoization with large portfolios
+* Significant improvement to Sesame requirements gathering performance with large market data environments
+* Improvement in performance of InterpolatedDoublesSurface.init()
 
+## v2.24
 
-Analytics compatibility
-- In FX implied curve construction, the curve node tenors are now adjusted correctly using holidays
-and the appropriate number of settlement days for the currency pair. This may cause differences. [PLAT-4373]
+### Bug Fixes
 
+* Ensure correct scaling by position quantity in equity index option results
 
-Source code layout
-- New project: og-engine-db - Database code for OG-Engine
-- New project: og-financial-types - Types to support OG_Financial
+### Enhancements
+
+* Added utilities to convert between Normal and Black volatilities
+* Added SSVI volatility formula, applied to pricing of STIR futures with Black on price
+* Increase coverage of serializable market data types and containers
+
+## v2.23
+
+### Bug Fixes
+
+* Correct yield formula for US inflation-linked bonds
+
+## v2.22
+
+### Bug Fixes
+* Correct error in TIPS yield when first coupon already fixed
+
+### Enhancements
+
+* Improve interpolator performance by removing unnecessary array copies
+* Cache hash code in trade wrapper subclasses to improve performance
+
+## v2.21
+
+### Enhancements
+
+* Cashflows for FRAs
+
+## v2.20
+
+### Bug Fixes
+
+* Correctly pass time-series to analytics for inflation swaps
+* Compute fixing date correctly when non-standard offsets used, or when fixing and payment calendars are different
+* Support average Ibor-like floating coupons
+* Use correct weights for stub interpolation
+* Correctly adjust end accrual date for zero-coupons
+* Correctly compute reset dates using coupon index when this differs from the main index of the leg
+
+### Enhancements
+
+* Make market data types serializable
+
+## v2.19
+
+### Enhancements
+
+* Engine Support for Zero Coupon Inflation Swaps - PV, Par Rate and Bucketed Sensitivities
+
+## v2.18
+
+### Bug Fixes
+
+* Fix for underlying index period computation.
+* Corrected day count of fixing accrued where the day count of the trade was used instead of the day count associated with the index.
+* Fix for Sesame examples configuration errors.
+
+### Enhancements
+
+* Add day counts for 1/1, Act/365L, and 30/360 ISDA.
+
+## v2.17
+
+Integrate Sesame subproject into OG-Platform repository. Sesame provides an alternate calculation engine for OG-Platform.

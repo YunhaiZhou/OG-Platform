@@ -13,8 +13,7 @@ import com.opengamma.analytics.financial.forex.derivative.ForexOptionDigital;
 import com.opengamma.analytics.financial.instrument.InstrumentDefinition;
 import com.opengamma.analytics.financial.instrument.InstrumentDefinitionVisitor;
 import com.opengamma.analytics.financial.interestrate.InstrumentDerivative;
-import com.opengamma.financial.convention.daycount.DayCount;
-import com.opengamma.financial.convention.daycount.DayCountFactory;
+import com.opengamma.analytics.util.time.TimeCalculator;
 import com.opengamma.util.ArgumentChecker;
 
 /**
@@ -127,28 +126,12 @@ public class ForexOptionDigitalDefinition implements InstrumentDefinition<Instru
 
   /**
    * {@inheritDoc}
-   * @deprecated Use the method that does not take yield curve names
-   */
-  @Deprecated
-  @Override
-  public ForexOptionDigital toDerivative(final ZonedDateTime date, final String... yieldCurveNames) {
-    ArgumentChecker.notNull(date, "date");
-    ArgumentChecker.notNull(yieldCurveNames, "yieldCurveNames");
-    final Forex fx = _underlyingForex.toDerivative(date, yieldCurveNames);
-    final DayCount actAct = DayCountFactory.INSTANCE.getDayCount("Actual/Actual ISDA");
-    final double expirationTime = actAct.getDayCountFraction(date, _expirationDate);
-    return new ForexOptionDigital(fx, expirationTime, _isCall, _isLong, _payDomestic);
-  }
-
-  /**
-   * {@inheritDoc}
    */
   @Override
   public ForexOptionDigital toDerivative(final ZonedDateTime date) {
     ArgumentChecker.notNull(date, "date");
     final Forex fx = _underlyingForex.toDerivative(date);
-    final DayCount actAct = DayCountFactory.INSTANCE.getDayCount("Actual/Actual ISDA");
-    final double expirationTime = actAct.getDayCountFraction(date, _expirationDate);
+    final double expirationTime = TimeCalculator.getTimeBetween(date, _expirationDate);
     return new ForexOptionDigital(fx, expirationTime, _isCall, _isLong, _payDomestic);
   }
 

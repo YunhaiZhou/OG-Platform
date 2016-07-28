@@ -5,6 +5,7 @@
  */
 package com.opengamma.analytics.math.matrix;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
 import org.apache.commons.lang.Validate;
@@ -12,7 +13,9 @@ import org.apache.commons.lang.Validate;
 /**
  * A minimal implementation of a vector (in the mathematical sense) that contains doubles.
  */
-public class DoubleMatrix1D implements Matrix<Double> {
+public class DoubleMatrix1D implements Matrix<Double>, Serializable {
+  private static final long serialVersionUID = 1L;
+  
   private final double[] _data;
   private final int _elements;
   /** Empty vector */
@@ -44,10 +47,34 @@ public class DoubleMatrix1D implements Matrix<Double> {
    * @param n number of elements
    * @param value value of elements
    */
-  public DoubleMatrix1D(final int n, double value) {
+  public DoubleMatrix1D(final int n, final double value) {
     _elements = n;
     _data = new double[_elements];
     Arrays.fill(_data, value);
+  }
+
+  /**
+   * Create an vector of length n with all entries zero
+   * @param n number of elements
+   */
+  public DoubleMatrix1D(final int n) {
+    _elements = n;
+    _data = new double[_elements];
+  }
+  
+  /**
+   * Create a vector based on the data provided.
+   * @param data the data, not null
+   * @param copy true if the array should be copied.
+   */
+  public DoubleMatrix1D(final double[] data, final boolean copy) {
+    Validate.notNull(data);
+    _elements = data.length;
+    if (copy) {
+      _data = Arrays.copyOf(data, _elements);
+    } else {
+      _data = data;
+    }
   }
 
   /**
